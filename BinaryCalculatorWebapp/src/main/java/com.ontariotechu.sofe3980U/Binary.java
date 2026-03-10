@@ -10,32 +10,41 @@ public class Binary
 	/**
 	* A constructor that generates a binary object.
 	*
-	* @param number a String of the binary values. It should conatins only zeros or ones with any length and order. otherwise, the value of "0" will be stored.   Trailing zeros will be excluded and empty string will be considered as zero.
+	* @param number a String of the binary values. It should contain only zeros or ones with any length and order. otherwise, the value of "0" will be stored.   Trailing zeros will be excluded and empty string will be considered as zero.
 	*/
-    public Binary(String number) {
+	public Binary(String number) {
+		if (number == null || number.isEmpty()) {
+			this.number = "0"; // Default to "0" for null or empty input
+			return;
+		}
+	
+		// Validate the binary string (only '0' or '1' allowed)
 		for (int i = 0; i < number.length(); i++) {
-			// check each character if it's not 0 or 1
-			char ch=number.charAt(i);
-			if(ch!='0' && ch!='1') {
-				number="0"; // if not store "0" and end the function
+			char ch = number.charAt(i);
+			if (ch != '0' && ch != '1') {
+				this.number = "0"; // Default to "0" for invalid input
 				return;
 			}
 		}
-		// remove any trailing zeros
+	
+		// Remove leading zeros
 		int beg;
 		for (beg = 0; beg < number.length(); beg++) {
-			if (number.charAt(beg)!='0')
+			if (number.charAt(beg) != '0') {
 				break;
+			}
 		}
-		//beg has the index of the first non zero digit in the number
-		this.number=number.substring(beg); // exclude the trailing zeros if any
+	
+		// If all digits are '0', ensure number is "0"
+		this.number = (beg == number.length()) ? "0" : number.substring(beg);
+	
 		// uncomment the following code
-		
-		if(this.number=="") { // replace empty strings with a single zero
-			this.number="0";
+		/*
+		if (this.number.isEmpty()) { // replace empty strings with a single zero
+			this.number = "0";
 		}
-		
-    }
+  		*/
+	}
 	/**
 	* Return the binary value of the variable
 	*
@@ -78,5 +87,88 @@ public class Binary
 		Binary result=new Binary(num3);  // create a binary object with the calculated value.
 		return result;
 		
+	}
+	/**
+		* Logical or on two binary variables.
+		*
+		* @param num1 The first operand object
+		* @param num2 The second operand object
+		* @return A binary variable with a value of <i>num1 OR num2</i>.
+	*/
+	public static Binary or(Binary num1, Binary num2){
+		//Get the indeces of the LSB for the strings
+		int len1 = num1.number.length() - 1;
+		int len2 = num2.number.length() - 1;
+
+		//Create a string builder to make our resut string
+		StringBuilder sb = new StringBuilder();
+
+		//Keep going until both strings are empty
+		while (len1 >= 0 || len2 >= 0){
+			//Get the current digits from the strings. If one string is empty, treat it as a 0.
+			char digit1 = (len1 >= 0) ? num1.number.charAt(len1--) : '0';
+			char digit2 = (len2 >= 0) ? num2.number.charAt(len2--) : '0';
+
+			//Logical or will be 1 if both are equal. 
+			char finalDigit = (digit1 == '1' || digit2 == '1') ? '1' : '0';
+			sb.insert(0, finalDigit);
+		}
+
+		//Create a binary object with the calculated value.
+		Binary result = new Binary(sb.toString());  
+		return result;
+	}
+
+	/**
+		* Logical and on two binary variables.
+		*
+		* @param num1 The first operand object
+		* @param num2 The second operand object
+		* @return A binary variable with a value of <i>num1 AND num2</i>.
+	*/
+	public static Binary and(Binary num1, Binary num2){
+		//Get the indeces of the LSB for the strings
+		int len1 = num1.number.length() - 1;
+		int len2 = num2.number.length() - 1;
+
+		//Create a string builder to make our resut string
+		StringBuilder sb = new StringBuilder();
+
+		//Keep going until both strings are empty
+		while (len1 >= 0 && len2 >= 0){
+			//Get the current digits from the strings. If one string is empty, treat it as a 0.
+			char digit1 = num1.number.charAt(len1--);
+			char digit2 = num2.number.charAt(len2--);
+
+			//Logical and will be 1 if both are equal. 
+			char finalDigit = (digit1 == '1' && digit2 == '1') ? '1' : '0';
+			sb.insert(0, finalDigit);
+		}
+
+		//Create a binary object with the calculated value.
+		Binary result = new Binary(sb.toString());
+		return result;
+	}
+
+	/**
+		* Multiplication of two binary variables.
+		*
+		* @param num1 The first operand object
+		* @param num2 The second operand object
+		* @return A binary variable with a value of <i>num1 * num2</i>.
+	*/
+	public static Binary multiply(Binary num1, Binary num2){
+		int binToDec = 0;
+		for (int i = num1.number.length() - 1; i >= 0; i--){
+			binToDec += (num1.number.charAt(i) == '1') ? Math.pow(2, num1.number.length() - 1 - i) : 0;
+		}
+
+		Binary result = new Binary(null);
+		while (binToDec > 0){
+			result = Binary.add(result, num2);
+			binToDec--;
+		}
+
+		return result;
 	}
 }	

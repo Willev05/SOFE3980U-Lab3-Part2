@@ -18,7 +18,7 @@ public class HelloAPIController {
                        @RequestParam(name="lname", required=false, defaultValue="Doe") String lastName) {
 		String name=firstName+ " " +lastName;
 		String suggestedEmail=firstName+ "."+lastName+"@OntarioTechU.net";
-		return  new APIResult(name,suggestedEmail);
+		return new APIResult(name,suggestedEmail);
 	}
 
 }
